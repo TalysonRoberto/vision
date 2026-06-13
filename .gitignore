@@ -1,0 +1,16 @@
+# --- Obsidian: estado de UI por usuário (evita conflitos no time) ---
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.obsidian/.cache
+
+# Lixeira do Obsidian
+.trash/
+
+# --- Claude Code: settings locais da máquina ---
+.claude/settings.local.json
+
+# --- Sistema operacional ---
+.DS_Store
+Thumbs.db
+desktop.ini
