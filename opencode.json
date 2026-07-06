@@ -1,0 +1,40 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["CLAUDE.md"],
+
+  "command": {
+    "nota": {
+      "description": "Cria uma nova nota no vault com frontmatter válido. Uso: /nota <tipo> <area> <nome-do-arquivo>",
+      "agent": "vault",
+      "template": "Crie uma nova nota no vault Obsidian seguindo o schema de frontmatter descrito em CLAUDE.md. Coloque na pasta correta conforme a tabela de tipos.\n\nTipo: $1\nÁrea: $2\nNome do arquivo: $3\n\nDemais instruções: $ARGUMENTS"
+    },
+    "revisar": {
+      "description": "Lista notas desatualizadas ou que precisam de revisão",
+      "template": "Varra o vault por notas com `status: desatualizado` ou frontmatter ausente/incompleto. Liste cada uma com caminho, data e resumo de 1 linha."
+    }
+  },
+
+  "agent": {
+    "vault": {
+      "description": "Especialista no cofre de contexto Obsidian. Use para navegar, criar e manter notas seguindo o protocolo do vault.",
+      "mode": "subagent",
+      "prompt": "Você é um especialista no Cofre de Contexto Obsidian descrito em CLAUDE.md. Siga o protocolo: 1) Leia _INDICE.md primeiro 2) Use TL;DRs em notas 3) Mantenha frontmatter válido 4) Prefira densidade sobre completude 5) Use wiki-links entre notas. Nunca duplique conteúdo."
+    }
+  },
+
+  "mcp": {
+    "kit": {
+      "type": "local",
+      "command": ["npx", "-y", "@luanpdd/kit-mcp"],
+      "enabled": true
+    }
+  },
+
+  "permission": {
+    "edit": "ask",
+    "bash": {
+      "git *": "allow",
+      "*": "ask"
+    }
+  }
+}

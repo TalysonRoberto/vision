@@ -1,0 +1,8 @@
+allowBuilds:
+  '@prisma/client': true
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver
+  - prisma
+  - "@prisma/engines"
+  - "@prisma/client"

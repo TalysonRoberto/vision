@@ -10,7 +10,54 @@
 # --- Claude Code: settings locais da máquina ---
 .claude/settings.local.json
 
-# --- Sistema operacional ---
+# --- OpenCode: settings locais da máquina ---
+.opencode.local.json
+
+# --- Backups temporários do vault ---
+*.vault-bak
+*.vault-bak.md
+
+# --- Dependências ---
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# --- Testes ---
+/coverage
+
+# --- Next.js ---
+/.next/
+/out/
+
+# --- Produção ---
+/build
+
+# --- Misc ---
 .DS_Store
 Thumbs.db
 desktop.ini
+*.pem
+
+# --- Debug ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- Env files (mas libera .env.example) ---
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# --- Vercel ---
+.vercel
+
+# --- TypeScript ---
+*.tsbuildinfo
+next-env.d.ts
