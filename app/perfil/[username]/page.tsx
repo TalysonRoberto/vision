@@ -113,67 +113,66 @@ export default async function PerfilPage({
   })) as PostCardDados[]
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-11 w-fit gap-2"
-        render={<Link href="/feed" />}
-        nativeButton={false}
-      >
-        <ArrowLeftIcon className="size-4" aria-hidden="true" />
-        Voltar ao feed
-      </Button>
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:gap-8">
+      <div className="flex min-w-0 flex-1 flex-col gap-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-11 w-fit gap-2"
+          render={<Link href="/feed" />}
+          nativeButton={false}
+        >
+          <ArrowLeftIcon className="size-4" aria-hidden="true" />
+          Voltar ao feed
+        </Button>
 
-      <ProfileHeader
-        perfil={{
-          name: usuario.name,
-          username: usuario.username,
-          bio: usuario.bio,
-          avatar_url: usuario.avatar_url,
-          cover_url: usuario.cover_url,
-        }}
-        isOwner={isOwner}
-      />
+        <ProfileHeader
+          perfil={{
+            name: usuario.name,
+            username: usuario.username,
+            bio: usuario.bio,
+            avatar_url: usuario.avatar_url,
+            cover_url: usuario.cover_url,
+          }}
+          isOwner={isOwner}
+        />
 
-      <ProfileTabs
-        username={usuario.username}
-        abaAtual={abaAtual}
-        totalPorAba={{ todas: totalTodas, fotos: totalFotos, videos: totalVideos }}
-      />
+        <ProfileTabs
+          username={usuario.username}
+          abaAtual={abaAtual}
+          totalPorAba={{ todas: totalTodas, fotos: totalFotos, videos: totalVideos }}
+        />
 
-      <section aria-label="Publicacoes" className="flex flex-col gap-4">
-        {postsMapeados.length === 0 ? (
-          <EmptyState
-            titulo={
-              abaAtual === "fotos"
-                ? "Nenhuma foto ainda"
-                : abaAtual === "videos"
-                  ? "Nenhum video ainda"
-                  : "Nenhuma publicacao ainda"
-            }
-            descricao={
-              isOwner
-                ? "Suas publicacoes aparecerao aqui."
-                : "Este usuario ainda nao publicou nada."
-            }
-          />
-        ) : (
-          <ul className="flex flex-col gap-4">
-            {postsMapeados.map((post) => (
-              <li key={post.id}>
-                <PostCard post={post} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        <section aria-label="Publicacoes" className="flex flex-col gap-4">
+          {postsMapeados.length === 0 ? (
+            <EmptyState
+              titulo={
+                abaAtual === "fotos"
+                  ? "Nenhuma foto ainda"
+                  : abaAtual === "videos"
+                    ? "Nenhum video ainda"
+                    : "Nenhuma publicacao ainda"
+              }
+              descricao={
+                isOwner
+                  ? "Suas publicacoes aparecerao aqui."
+                  : "Este usuario ainda nao publicou nada."
+              }
+            />
+          ) : (
+            <ul className="flex flex-col gap-4">
+              {postsMapeados.map((post) => (
+                <li key={post.id}>
+                  <PostCard post={post} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
 
       {isOwner && (
-        <section
-          aria-label="Quem viu meu perfil"
-          className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground"
-        >
+        <aside className="flex w-full flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground lg:sticky lg:top-6 lg:w-80 lg:self-start">
           <header className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Quem viu meu perfil</h2>
             <span className="text-xs text-muted-foreground">
@@ -183,7 +182,7 @@ export default async function PerfilPage({
             </span>
           </header>
           <ProfileViewsList visualizacoes={visualizacoes} />
-        </section>
+        </aside>
       )}
     </main>
   )

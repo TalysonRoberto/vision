@@ -17,6 +17,11 @@ export type ComentarioDados = {
   content: string
   created_at: Date
   user: AutorComentario
+  likedByCurrentUser?: boolean
+  _count?: {
+    likes?: number
+    replies?: number
+  }
   replies?: ComentarioDados[]
 }
 

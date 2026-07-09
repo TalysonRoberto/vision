@@ -12,6 +12,8 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const sessao = await auth()
+  const currentUserId = sessao?.user?.id ?? null
   const { id: postId } = await params
 
   const post = await prisma.post.findUnique({
@@ -32,6 +34,12 @@ export async function GET(
       user: {
         select: { id: true, name: true, username: true, avatar_url: true },
       },
+      likes: currentUserId
+        ? { where: { user_id: currentUserId }, select: { id: true } }
+        : false,
+      _count: {
+        select: { likes: true },
+      },
       replies: {
         orderBy: { created_at: "asc" },
         select: {
@@ -41,12 +49,27 @@ export async function GET(
           user: {
             select: { id: true, name: true, username: true, avatar_url: true },
           },
+          likes: currentUserId
+            ? { where: { user_id: currentUserId }, select: { id: true } }
+            : false,
+          _count: {
+            select: { likes: true },
+          },
         },
       },
     },
   })
 
-  return NextResponse.json({ comments: comentarios }, { status: 200 })
+  const comentariosMapeados = comentarios.map((c) => ({
+    ...c,
+    likedByCurrentUser: Boolean(c.likes && c.likes.length > 0),
+    replies: c.replies.map((r) => ({
+      ...r,
+      likedByCurrentUser: Boolean(r.likes && r.likes.length > 0),
+    })),
+  }))
+
+  return NextResponse.json({ comments: comentariosMapeados }, { status: 200 })
 }
 
 export async function POST(
@@ -124,8 +147,18 @@ export async function POST(
       user: {
         select: { id: true, name: true, username: true, avatar_url: true },
       },
+      _count: {
+        select: { likes: true, replies: true },
+      },
     },
   })
 
-  return NextResponse.json({ comment: comentario }, { status: 201 })
+  const comentarioMapeado = {
+    ...comentario,
+    likedByCurrentUser: false,
+    likes: [],
+    replies: [],
+  }
+
+  return NextResponse.json({ comment: comentarioMapeado }, { status: 201 })
 }

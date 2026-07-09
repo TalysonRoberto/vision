@@ -78,7 +78,7 @@ export function PostCard({ post }: { post: PostCardDados }) {
         />
       )}
 
-      <footer className="flex items-center gap-2 pt-1">
+      <footer className="flex flex-wrap items-center gap-2 pt-1">
         <LikeButton
           postId={post.id}
           initialLiked={post.likedByCurrentUser}

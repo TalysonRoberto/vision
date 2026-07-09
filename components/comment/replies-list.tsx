@@ -1,8 +1,15 @@
 import Link from "next/link"
 import { formatarDataRelativa } from "@/lib/data"
 import type { ComentarioDados } from "./comment-form"
+import { CommentLikeButton } from "./comment-like-button"
 
-export function RepliesList({ replies }: { replies: ComentarioDados[] }) {
+export function RepliesList({
+  postId,
+  replies,
+}: {
+  postId: string
+  replies: ComentarioDados[]
+}) {
   if (!replies || replies.length === 0) return null
 
   return (
@@ -43,6 +50,14 @@ export function RepliesList({ replies }: { replies: ComentarioDados[] }) {
           <p className="whitespace-pre-wrap pl-9 text-sm text-foreground/90">
             {reply.content}
           </p>
+          <div className="pl-9">
+            <CommentLikeButton
+              postId={postId}
+              commentId={reply.id}
+              initialLiked={reply.likedByCurrentUser ?? false}
+              initialCount={reply._count?.likes ?? 0}
+            />
+          </div>
         </li>
       ))}
     </ul>

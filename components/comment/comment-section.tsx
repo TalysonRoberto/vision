@@ -7,6 +7,7 @@ import { formatarDataRelativa } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { CommentForm, type ComentarioDados } from "./comment-form"
 import { RepliesList } from "./replies-list"
+import { CommentLikeButton } from "./comment-like-button"
 
 type EstadoCarregamento = "carregando" | "erro" | "pronto"
 
@@ -61,7 +62,7 @@ export function CommentSection({
   }
 
   return (
-    <section className="flex flex-col gap-3 pt-2">
+    <section className="flex w-full flex-col gap-3 pt-2">
       <button
         type="button"
         onClick={() => setAberto((v) => !v)}
@@ -147,8 +148,28 @@ export function CommentSection({
                     {comentario.content}
                   </p>
 
-                  <div className="pl-11">
-                    {replyingTo === comentario.id ? (
+                  <div className="flex flex-col gap-2 pl-11">
+                    <div className="flex items-center gap-1">
+                      <CommentLikeButton
+                        postId={postId}
+                        commentId={comentario.id}
+                        initialLiked={comentario.likedByCurrentUser ?? false}
+                        initialCount={comentario._count?.likes ?? 0}
+                      />
+                      {replyingTo !== comentario.id && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 px-2 text-xs text-muted-foreground"
+                          onClick={() => setReplyingTo(comentario.id)}
+                        >
+                          Responder
+                        </Button>
+                      )}
+                    </div>
+
+                    {replyingTo === comentario.id && (
                       <CommentForm
                         postId={postId}
                         parentCommentId={comentario.id}
@@ -156,20 +177,10 @@ export function CommentSection({
                         onSubmitted={(reply) => aoResponder(comentario.id, reply)}
                         onCancel={() => setReplyingTo(null)}
                       />
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-2 text-xs text-muted-foreground"
-                        onClick={() => setReplyingTo(comentario.id)}
-                      >
-                        Responder
-                      </Button>
                     )}
                   </div>
 
-                  <RepliesList replies={comentario.replies ?? []} />
+                  <RepliesList postId={postId} replies={comentario.replies ?? []} />
                 </li>
               ))}
             </ul>

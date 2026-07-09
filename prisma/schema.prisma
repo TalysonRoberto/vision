@@ -20,10 +20,11 @@ model User {
   bio           String?
   created_at    DateTime  @default(now()) @db.Timestamptz
 
-  posts        Post[]
-  likes        Like[]
-  comments     Comment[]
-  profileViews ProfileView[] @relation("ProfileViewsReceived")
+  posts          Post[]
+  likes          Like[]
+  commentLikes   CommentLike[]
+  comments       Comment[]
+  profileViews   ProfileView[] @relation("ProfileViewsReceived")
   viewedProfiles ProfileView[] @relation("ProfileViewsMade")
 
   @@map("users")
@@ -68,14 +69,29 @@ model Comment {
   content           String
   created_at        DateTime  @default(now()) @db.Timestamptz
 
-  post   Post      @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  user   User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  parent Comment?  @relation("CommentReplies", fields: [parent_comment_id], references: [id], onDelete: Cascade)
-  replies Comment[] @relation("CommentReplies")
+  post    Post          @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  parent  Comment?      @relation("CommentReplies", fields: [parent_comment_id], references: [id], onDelete: Cascade)
+  replies Comment[]     @relation("CommentReplies")
+  likes   CommentLike[]
 
   @@index([post_id, created_at])
   @@index([parent_comment_id])
   @@map("comments")
+}
+
+model CommentLike {
+  id         String   @id @default(cuid())
+  comment_id String
+  user_id    String
+  created_at DateTime @default(now()) @db.Timestamptz
+
+  comment Comment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([comment_id, user_id])
+  @@index([comment_id])
+  @@map("comment_likes")
 }
 
 model ProfileView {
