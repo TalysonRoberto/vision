@@ -11,10 +11,12 @@ export function LikeButton({
   postId,
   initialLiked,
   initialCount,
+  className,
 }: {
   postId: string
   initialLiked: boolean
   initialCount: number
+  className?: string
 }) {
   const [liked, setLiked] = useState(initialLiked)
   const [count, setCount] = useState(initialCount)
@@ -60,7 +62,8 @@ export function LikeButton({
         "inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors",
         "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         "disabled:opacity-50",
-        liked ? "text-destructive" : "text-muted-foreground"
+        liked ? "text-destructive" : "text-muted-foreground",
+        className
       )}
     >
       <HeartIcon

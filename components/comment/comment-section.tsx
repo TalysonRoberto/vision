@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { MessageCircleIcon, Loader2Icon } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { formatarDataRelativa } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { CommentForm, type ComentarioDados } from "./comment-form"
@@ -14,11 +15,24 @@ type EstadoCarregamento = "carregando" | "erro" | "pronto"
 export function CommentSection({
   postId,
   initialCount,
+  variant = "default",
+  open,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   postId: string
   initialCount: number
+  variant?: "default" | "overlay"
+  open?: boolean
+  onOpenChange?: (aberto: boolean) => void
+  hideTrigger?: boolean
 }) {
-  const [aberto, setAberto] = useState(false)
+  const [abertoInterno, setAbertoInterno] = useState(false)
+  const aberto = open ?? abertoInterno
+  const setAberto = (valor: boolean) => {
+    setAbertoInterno(valor)
+    onOpenChange?.(valor)
+  }
   const [comentarios, setComentarios] = useState<ComentarioDados[]>([])
   const [estado, setEstado] = useState<EstadoCarregamento>("carregando")
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
@@ -63,16 +77,26 @@ export function CommentSection({
 
   return (
     <section className="flex w-full flex-col gap-3 pt-2">
-      <button
-        type="button"
-        onClick={() => setAberto((v) => !v)}
-        aria-expanded={aberto}
-        aria-label={aberto ? "Fechar comentarios" : "Abrir comentarios"}
-        className="inline-flex h-11 w-fit items-center gap-2 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <MessageCircleIcon className="size-5" aria-hidden="true" />
-        <span>{initialCount} comenta{initialCount === 1 ? "rio" : "rios"}</span>
-      </button>
+      {!hideTrigger && (
+        <button
+          type="button"
+          onClick={() => setAberto(!aberto)}
+          aria-expanded={aberto}
+          aria-label={aberto ? "Fechar comentarios" : "Abrir comentarios"}
+          className={cn(
+            "inline-flex items-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            variant === "overlay"
+              ? "h-9 gap-1.5 px-2 text-xs text-white hover:bg-white/10"
+              : "h-11 w-fit px-3 text-muted-foreground hover:bg-muted"
+          )}
+        >
+          <MessageCircleIcon
+            className={variant === "overlay" ? "size-4" : "size-5"}
+            aria-hidden="true"
+          />
+          <span>{initialCount}</span>
+        </button>
+      )}
 
       {aberto && (
         <div className="flex w-full flex-col gap-4 border-t border-border pt-4">

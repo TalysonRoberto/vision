@@ -2,6 +2,7 @@ import Link from "next/link"
 import { formatarDataRelativa } from "@/lib/data"
 import { LikeButton } from "./like-button"
 import { CommentSection } from "@/components/comment/comment-section"
+import { PhotoPostCard } from "./photo-post-card"
 
 export type PostCardDados = {
   id: string
@@ -23,6 +24,10 @@ export type PostCardDados = {
 }
 
 export function PostCard({ post }: { post: PostCardDados }) {
+  if (post.media_type === "image" && post.media_url) {
+    return <PhotoPostCard post={post} />
+  }
+
   return (
     <article className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground">
       <header className="flex items-center gap-3">
