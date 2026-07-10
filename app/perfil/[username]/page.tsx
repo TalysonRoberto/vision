@@ -94,6 +94,7 @@ export default async function PerfilPage({
       content_text: true,
       media_url: true,
       media_type: true,
+      media_fit: true,
       created_at: true,
       author: {
         select: { id: true, name: true, username: true, avatar_url: true },
@@ -114,7 +115,21 @@ export default async function PerfilPage({
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:gap-8">
-      <div className="flex min-w-0 flex-1 flex-col gap-6">
+      {isOwner && (
+        <aside className="order-2 flex w-full flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground lg:order-1 lg:sticky lg:top-6 lg:w-80 lg:self-start">
+          <header className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">Quem viu meu perfil</h2>
+            <span className="text-xs text-muted-foreground">
+              {visualizacoes.length === 0
+                ? "nenhuma"
+                : `${visualizacoes.length} recente${visualizacoes.length === 1 ? "" : "s"}`}
+            </span>
+          </header>
+          <ProfileViewsList visualizacoes={visualizacoes} />
+        </aside>
+      )}
+
+      <div className="order-1 flex min-w-0 flex-1 flex-col gap-6 lg:order-2">
         <Button
           variant="ghost"
           size="sm"
@@ -170,20 +185,6 @@ export default async function PerfilPage({
           )}
         </section>
       </div>
-
-      {isOwner && (
-        <aside className="flex w-full flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground lg:sticky lg:top-6 lg:w-80 lg:self-start">
-          <header className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">Quem viu meu perfil</h2>
-            <span className="text-xs text-muted-foreground">
-              {visualizacoes.length === 0
-                ? "nenhuma"
-                : `${visualizacoes.length} recente${visualizacoes.length === 1 ? "" : "s"}`}
-            </span>
-          </header>
-          <ProfileViewsList visualizacoes={visualizacoes} />
-        </aside>
-      )}
     </main>
   )
 }

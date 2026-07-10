@@ -9,6 +9,7 @@ export type PostCardDados = {
   content_text: string
   media_url: string | null
   media_type: string | null
+  media_fit: "cover" | "contain"
   created_at: Date
   author: {
     id: string

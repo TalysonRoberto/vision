@@ -10,6 +10,7 @@ export type CriarPostInput = {
   contentText: string
   mediaUrl: string | null
   mediaType: "image" | "video" | null
+  mediaFit?: "cover" | "contain"
 }
 
 export type CriarPostResultado =
@@ -45,6 +46,7 @@ export async function criarPost(input: CriarPostInput): Promise<CriarPostResulta
         content_text: texto,
         media_url: input.mediaUrl,
         media_type: input.mediaType,
+        media_fit: input.mediaType === "image" ? (input.mediaFit ?? "cover") : "cover",
       },
       select: { id: true },
     })

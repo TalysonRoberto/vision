@@ -27,6 +27,7 @@ async function buscarPosts(page: number, userId: string | null): Promise<BuscaPo
         content_text: true,
         media_url: true,
         media_type: true,
+        media_fit: true,
         created_at: true,
         author: {
           select: { id: true, name: true, username: true, avatar_url: true },

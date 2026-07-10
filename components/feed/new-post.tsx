@@ -14,6 +14,7 @@ export function NewPost() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null)
+  const [mediaFit, setMediaFit] = useState<"cover" | "contain">("cover")
   const [estadoUpload, setEstadoUpload] = useState<EstadoUpload>("idle")
   const [publicando, setPublicando] = useState(false)
   const inputArquivoRef = useRef<HTMLInputElement>(null)
@@ -57,6 +58,7 @@ export function NewPost() {
     setPreviewUrl(null)
     setMediaUrl(null)
     setMediaType(null)
+    setMediaFit("cover")
     setEstadoUpload("idle")
     if (inputArquivoRef.current) inputArquivoRef.current.value = ""
   }
@@ -78,6 +80,7 @@ export function NewPost() {
         contentText: textoTrim,
         mediaUrl,
         mediaType,
+        mediaFit: mediaType === "image" ? mediaFit : undefined,
       })
 
       if (!resultado.ok) {
@@ -111,9 +114,42 @@ export function NewPost() {
       />
 
       {previewUrl && (
-        <div className="relative">
+        <div className="relative flex flex-col gap-2">
           {mediaType === "image" || (arquivo && arquivo.type.startsWith("image/")) ? (
-            <img src={previewUrl} alt="Preview" className="max-h-72 w-full rounded-md object-cover" />
+            <>
+              <div className="relative aspect-square w-full overflow-hidden rounded-md bg-muted">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className={`h-full w-full ${mediaFit === "contain" ? "object-contain" : "object-cover"}`}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Enquadramento:</span>
+                <button
+                  type="button"
+                  onClick={() => setMediaFit("cover")}
+                  className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                    mediaFit === "cover"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  Preencher
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMediaFit("contain")}
+                  className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                    mediaFit === "contain"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  Ajustar
+                </button>
+              </div>
+            </>
           ) : (
             <video src={previewUrl} controls className="max-h-72 w-full rounded-md object-cover" />
           )}

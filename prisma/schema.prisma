@@ -36,6 +36,7 @@ model Post {
   content_text String
   media_url    String?
   media_type   String?
+  media_fit    String    @default("cover")
   created_at   DateTime  @default(now()) @db.Timestamptz
 
   author   User     @relation(fields: [user_id], references: [id], onDelete: Cascade)

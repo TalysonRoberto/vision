@@ -9,21 +9,33 @@ import type { PostCardDados } from "./post-card"
 
 export function PhotoPostCard({ post }: { post: PostCardDados }) {
   const [comentariosAbertos, setComentariosAbertos] = useState(false)
+  const objectFit = post.media_fit === "contain" ? "object-contain" : "object-cover"
+  const showBackground = post.media_fit === "contain"
 
   return (
-    <article className="flex flex-col gap-3 overflow-hidden rounded-2xl bg-card text-card-foreground">
-      <div className="relative aspect-[3/4] w-full overflow-hidden">
+    <article className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4 text-card-foreground">
+      <div
+        className={`relative aspect-square w-full overflow-hidden rounded-xl ${
+          showBackground ? "bg-muted" : ""
+        }`}
+      >
         <img
           src={post.media_url!}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`h-full w-full ${objectFit}`}
         />
 
-        {/* Degrade na parte inferior */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Degrade na parte inferior (apenas com cover) */}
+        {!showBackground && (
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        )}
 
         {/* Conteudo inferior */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-4">
+        <div
+          className={`absolute bottom-0 left-0 right-0 flex items-end justify-between gap-4 p-4 ${
+            showBackground ? "bg-gradient-to-t from-black/80 via-black/40 to-transparent" : ""
+          }`}
+        >
           {/* Dados do usuario + texto */}
           <div className="flex min-w-0 flex-col gap-2">
             <Link
