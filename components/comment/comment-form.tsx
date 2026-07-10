@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { toast } from "sonner"
+import { ChevronRightIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -92,19 +93,31 @@ export function CommentForm({
 
   return (
     <div className="flex flex-col gap-2">
-      <Textarea
-        ref={textareaRef}
-        value={conteudo}
-        onChange={(e) => setConteudo(e.target.value)}
-        onKeyDown={onKeyDown}
-        placeholder={placeholder}
-        rows={eReply ? 2 : 3}
-        maxLength={2000}
-        className="w-full resize-none"
-        aria-label={eReply ? "Resposta" : "Novo comentario"}
-      />
-      <div className="flex items-center justify-end gap-2">
-        {eReply && (
+      <div className="relative">
+        <Textarea
+          ref={textareaRef}
+          value={conteudo}
+          onChange={(e) => setConteudo(e.target.value)}
+          onKeyDown={onKeyDown}
+          placeholder={placeholder}
+          rows={eReply ? 2 : 3}
+          maxLength={2000}
+          className="w-full resize-none pr-12"
+          aria-label={eReply ? "Resposta" : "Novo comentario"}
+        />
+        <Button
+          type="button"
+          size="icon"
+          onClick={enviar}
+          disabled={enviando || !conteudo.trim()}
+          className="absolute bottom-2 right-2 size-8 rounded-full"
+          aria-label={eReply ? "Responder" : "Comentar"}
+        >
+          <ChevronRightIcon className="size-5" aria-hidden="true" />
+        </Button>
+      </div>
+      {eReply && (
+        <div className="flex items-center justify-end">
           <Button
             type="button"
             variant="ghost"
@@ -115,17 +128,8 @@ export function CommentForm({
           >
             Cancelar
           </Button>
-        )}
-        <Button
-          type="button"
-          size="sm"
-          onClick={enviar}
-          disabled={enviando || !conteudo.trim()}
-          className="h-9 px-4"
-        >
-          {enviando ? "Enviando..." : eReply ? "Responder" : "Comentar"}
-        </Button>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

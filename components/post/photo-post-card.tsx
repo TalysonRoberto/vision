@@ -80,7 +80,8 @@ export function PhotoPostCard({ post }: { post: PostCardDados }) {
               postId={post.id}
               initialLiked={post.likedByCurrentUser}
               initialCount={post._count.likes}
-              className="h-9 gap-1.5 px-2 text-xs text-white hover:bg-white/10"
+              overlay
+              className="h-9 gap-1.5 px-2 text-xs hover:bg-white/10"
             />
             <button
               type="button"
