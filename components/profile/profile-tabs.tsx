@@ -1,4 +1,15 @@
+"use client"
+
 import Link from "next/link"
+import { useState } from "react"
+import { ProfileViewsList, type Visualizacao } from "./profile-views-list"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 const ABAS = [
   { valor: "todas", label: "Todas" },
@@ -10,11 +21,17 @@ export function ProfileTabs({
   username,
   abaAtual,
   totalPorAba,
+  visualizacoes,
+  mostrarVisualizacoes,
 }: {
   username: string
   abaAtual: string
   totalPorAba: { todas: number; fotos: number; videos: number }
+  visualizacoes: Visualizacao[]
+  mostrarVisualizacoes: boolean
 }) {
+  const [modalAberto, setModalAberto] = useState(false)
+
   const contagens: Record<string, number> = {
     todas: totalPorAba.todas,
     fotos: totalPorAba.fotos,
@@ -48,6 +65,34 @@ export function ProfileTabs({
           </Link>
         )
       })}
+
+      {mostrarVisualizacoes && (
+        <Dialog open={modalAberto} onOpenChange={setModalAberto}>
+          <DialogTrigger
+            render={
+              <button
+                type="button"
+                className="flex items-center gap-2 border-b-2 border-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            }
+          >
+            Visualizações
+            {visualizacoes.length > 0 && (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                {visualizacoes.length}
+              </span>
+            )}
+          </DialogTrigger>
+          <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Quem viu meu perfil</DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[60vh] overflow-y-auto pr-1">
+              <ProfileViewsList visualizacoes={visualizacoes} />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </nav>
   )
 }

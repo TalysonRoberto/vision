@@ -76,7 +76,7 @@ export function CommentSection({
   }
 
   return (
-    <section className="flex w-full flex-col gap-3 pt-2">
+    <section className="flex flex-col gap-3 pt-2">
       {!hideTrigger && (
         <button
           type="button"

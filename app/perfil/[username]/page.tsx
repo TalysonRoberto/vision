@@ -6,7 +6,7 @@ import { registrarProfileView } from "@/lib/profile-views"
 import { ProfileHeader } from "@/components/profile/profile-header"
 import { ProfileTabs } from "@/components/profile/profile-tabs"
 import { EmptyState } from "@/components/profile/empty-state"
-import { ProfileViewsList, type Visualizacao } from "@/components/profile/profile-views-list"
+import { type Visualizacao } from "@/components/profile/profile-views-list"
 import { PostCard, type PostCardDados } from "@/components/post/post-card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon } from "lucide-react"
@@ -114,77 +114,63 @@ export default async function PerfilPage({
   })) as PostCardDados[]
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:gap-8">
-      {isOwner && (
-        <aside className="order-2 flex w-full flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground lg:order-1 lg:sticky lg:top-6 lg:w-80 lg:self-start">
-          <header className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">Quem viu meu perfil</h2>
-            <span className="text-xs text-muted-foreground">
-              {visualizacoes.length === 0
-                ? "nenhuma"
-                : `${visualizacoes.length} recente${visualizacoes.length === 1 ? "" : "s"}`}
-            </span>
-          </header>
-          <ProfileViewsList visualizacoes={visualizacoes} />
-        </aside>
-      )}
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-11 w-fit gap-2"
+        render={<Link href="/feed" />}
+        nativeButton={false}
+      >
+        <ArrowLeftIcon className="size-4" aria-hidden="true" />
+        Voltar ao feed
+      </Button>
 
-      <div className="order-1 flex min-w-0 flex-1 flex-col gap-6 lg:order-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-11 w-fit gap-2"
-          render={<Link href="/feed" />}
-          nativeButton={false}
-        >
-          <ArrowLeftIcon className="size-4" aria-hidden="true" />
-          Voltar ao feed
-        </Button>
+      <ProfileHeader
+        perfil={{
+          name: usuario.name,
+          username: usuario.username,
+          bio: usuario.bio,
+          avatar_url: usuario.avatar_url,
+          cover_url: usuario.cover_url,
+        }}
+        isOwner={isOwner}
+      />
 
-        <ProfileHeader
-          perfil={{
-            name: usuario.name,
-            username: usuario.username,
-            bio: usuario.bio,
-            avatar_url: usuario.avatar_url,
-            cover_url: usuario.cover_url,
-          }}
-          isOwner={isOwner}
-        />
+      <ProfileTabs
+        username={usuario.username}
+        abaAtual={abaAtual}
+        totalPorAba={{ todas: totalTodas, fotos: totalFotos, videos: totalVideos }}
+        visualizacoes={isOwner ? visualizacoes : []}
+        mostrarVisualizacoes={isOwner}
+      />
 
-        <ProfileTabs
-          username={usuario.username}
-          abaAtual={abaAtual}
-          totalPorAba={{ todas: totalTodas, fotos: totalFotos, videos: totalVideos }}
-        />
-
-        <section aria-label="Publicacoes" className="flex flex-col gap-4">
-          {postsMapeados.length === 0 ? (
-            <EmptyState
-              titulo={
-                abaAtual === "fotos"
-                  ? "Nenhuma foto ainda"
-                  : abaAtual === "videos"
-                    ? "Nenhum video ainda"
-                    : "Nenhuma publicacao ainda"
-              }
-              descricao={
-                isOwner
-                  ? "Suas publicacoes aparecerao aqui."
-                  : "Este usuario ainda nao publicou nada."
-              }
-            />
-          ) : (
-            <ul className="flex flex-col gap-4">
-              {postsMapeados.map((post) => (
-                <li key={post.id}>
-                  <PostCard post={post} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
+      <section aria-label="Publicacoes" className="flex flex-col gap-4">
+        {postsMapeados.length === 0 ? (
+          <EmptyState
+            titulo={
+              abaAtual === "fotos"
+                ? "Nenhuma foto ainda"
+                : abaAtual === "videos"
+                  ? "Nenhum video ainda"
+                  : "Nenhuma publicacao ainda"
+            }
+            descricao={
+              isOwner
+                ? "Suas publicacoes aparecerao aqui."
+                : "Este usuario ainda nao publicou nada."
+            }
+          />
+        ) : (
+          <ul className="flex flex-col gap-4">
+            {postsMapeados.map((post) => (
+              <li key={post.id}>
+                <PostCard post={post} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   )
 }
