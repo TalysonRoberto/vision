@@ -20,7 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { createBrowserClient } from "@/lib/supabase-browser"
-import { validarMimeMusica } from "@/lib/upload"
+import { mimeParaSupabase, validarMimeMusica } from "@/lib/upload"
 
 const LIMITE_MUSICA_MB = 10
 
@@ -102,7 +102,7 @@ export function EditProfileDialog({ perfil }: { perfil: PerfilAtual }) {
     const { error } = await supabase.storage
       .from("posts")
       .uploadToSignedUrl(path, token, arquivo, {
-        contentType: arquivo.type,
+        contentType: mimeParaSupabase(arquivo.type),
       })
 
     if (error) {

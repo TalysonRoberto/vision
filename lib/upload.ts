@@ -61,7 +61,7 @@ export async function uploadArquivo(
   const { error } = await supabase.storage
     .from("posts")
     .upload(filePath, buffer, {
-      contentType: mime,
+      contentType: mimeParaSupabase(mime),
       upsert: false,
     })
 
@@ -76,4 +76,11 @@ export async function uploadArquivo(
 
 export function validarTamanho(tamanhoBytes: number, limiteBytes = 10 * 1024 * 1024): boolean {
   return tamanhoBytes <= limiteBytes
+}
+
+// Supabase Storage rejeita alguns MIME padroes de browser (ex: audio/mpeg).
+// Normaliza para variantes conhecidas que o Storage aceita.
+export function mimeParaSupabase(mime: string): string {
+  if (mime === "audio/mpeg") return "audio/mp3"
+  return mime
 }

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { criarPost } from "@/app/feed/actions"
 import { createBrowserClient } from "@/lib/supabase-browser"
-import { mimeParaMediaTipo, validarMime, validarTamanho } from "@/lib/upload"
+import { mimeParaMediaTipo, mimeParaSupabase, validarMime, validarTamanho } from "@/lib/upload"
 
 type EstadoUpload = "idle" | "enviando" | "concluido"
 
@@ -57,12 +57,12 @@ export function NewPost() {
       const { token, path, publicUrl, mediaType } = await resposta.json()
 
       // 2. Faz upload direto para Supabase usando signed URL (bypass Vercel payload limit)
-      const supabase = createBrowserClient()
-      const { error } = await supabase.storage
-        .from("posts")
-        .uploadToSignedUrl(path, token, selecionado, {
-          contentType: selecionado.type,
-        })
+    const supabase = createBrowserClient()
+    const { error } = await supabase.storage
+      .from("posts")
+      .uploadToSignedUrl(path, token, selecionado, {
+        contentType: mimeParaSupabase(selecionado.type),
+      })
 
       if (error) {
         throw new Error(`Falha no upload: ${error.message}`)
