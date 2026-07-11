@@ -20,6 +20,8 @@ type UsuarioSidebar = {
   name: string
   username: string
   avatar_url: string | null
+  cover_url: string | null
+  bio: string | null
 }
 
 function SidebarCard({ usuario, onNavigate }: { usuario: UsuarioSidebar; onNavigate?: () => void }) {
@@ -39,66 +41,90 @@ function SidebarCard({ usuario, onNavigate }: { usuario: UsuarioSidebar; onNavig
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground">
+    <div className="flex flex-col gap-3 overflow-hidden rounded-lg border border-border bg-card text-card-foreground">
       <Link
         href={`/perfil/${usuario.username}`}
         onClick={onNavigate}
-        className="flex items-center gap-3"
+        className="flex flex-col"
       >
-        {usuario.avatar_url ? (
-          <img src={usuario.avatar_url} alt="" className="size-12 rounded-full object-cover" />
-        ) : (
-          <div
-            className="flex size-12 items-center justify-center rounded-full bg-muted text-base font-semibold text-muted-foreground"
-            aria-hidden="true"
-          >
-            {usuario.name.charAt(0).toUpperCase()}
+        <div className="relative h-20 w-full overflow-hidden sm:h-24">
+          {usuario.cover_url ? (
+            <img
+              src={usuario.cover_url}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-primary/10 via-muted to-muted/50" />
+          )}
+        </div>
+        <div className="relative -mt-8 flex flex-col gap-2 px-4 pb-2">
+          <div className="size-16 overflow-hidden rounded-full border-4 border-background bg-muted">
+            {usuario.avatar_url ? (
+              <img
+                src={usuario.avatar_url}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div
+                className="flex h-full w-full items-center justify-center text-lg font-semibold text-muted-foreground"
+                aria-hidden="true"
+              >
+                {usuario.name.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
-        )}
-        <div className="flex flex-col overflow-hidden">
-          <span className="truncate text-sm font-medium text-foreground">{usuario.name}</span>
-          <span className="truncate text-xs text-muted-foreground">@{usuario.username}</span>
+          <div className="flex flex-col overflow-hidden">
+            <span className="truncate text-sm font-medium text-foreground">{usuario.name}</span>
+            <span className="truncate text-xs text-muted-foreground">@{usuario.username}</span>
+          </div>
+          {usuario.bio && (
+            <p className="line-clamp-3 text-xs text-foreground/80">{usuario.bio}</p>
+          )}
         </div>
       </Link>
 
-      <Button
-        variant="outline"
-        size="sm"
-        className="h-10 w-full"
-        render={<Link href={`/perfil/${usuario.username}`} />}
-        nativeButton={false}
-        onClick={onNavigate}
-      >
-        <UserIcon className="size-4" aria-hidden="true" />
-        Ver meu perfil
-      </Button>
+      <div className="flex flex-col gap-2 p-4 pt-0">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10 w-full"
+          render={<Link href={`/perfil/${usuario.username}`} />}
+          nativeButton={false}
+          onClick={onNavigate}
+        >
+          <UserIcon className="size-4" aria-hidden="true" />
+          Ver meu perfil
+        </Button>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-        className="h-10 w-full"
-        aria-label={currentTheme === "dark" ? "Mudar para modo claro" : "Mudar para modo escuro"}
-      >
-        {currentTheme === "dark" ? (
-          <SunIcon className="size-4" aria-hidden="true" />
-        ) : (
-          <MoonIcon className="size-4" aria-hidden="true" />
-        )}
-        {currentTheme === "dark" ? "Modo claro" : "Modo escuro"}
-      </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          className="h-10 w-full"
+          aria-label={currentTheme === "dark" ? "Mudar para modo claro" : "Mudar para modo escuro"}
+        >
+          {currentTheme === "dark" ? (
+            <SunIcon className="size-4" aria-hidden="true" />
+          ) : (
+            <MoonIcon className="size-4" aria-hidden="true" />
+          )}
+          {currentTheme === "dark" ? "Modo claro" : "Modo escuro"}
+        </Button>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={sair}
-        className="h-10 w-full"
-      >
-        <LogOutIcon className="size-4" aria-hidden="true" />
-        Sair
-      </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={sair}
+          className="h-10 w-full"
+        >
+          <LogOutIcon className="size-4" aria-hidden="true" />
+          Sair
+        </Button>
+      </div>
     </div>
   )
 }

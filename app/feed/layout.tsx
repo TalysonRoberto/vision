@@ -11,7 +11,7 @@ export default async function FeedLayout({ children }: { children: React.ReactNo
 
   const usuario = await prisma.user.findUnique({
     where: { id: sessao.user.id },
-    select: { name: true, username: true, avatar_url: true },
+    select: { name: true, username: true, avatar_url: true, cover_url: true, bio: true },
   })
 
   if (!usuario) {
@@ -25,6 +25,8 @@ export default async function FeedLayout({ children }: { children: React.ReactNo
           name: usuario.name,
           username: usuario.username,
           avatar_url: usuario.avatar_url,
+          cover_url: usuario.cover_url,
+          bio: usuario.bio,
         }}
       />
       <div className="flex flex-1 flex-col gap-6">{children}</div>

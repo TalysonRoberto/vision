@@ -5,6 +5,7 @@ import Link from "next/link"
 import { MessageCircleIcon } from "lucide-react"
 import { LikeButton } from "./like-button"
 import { CommentSection } from "@/components/comment/comment-section"
+import { PostOptionsMenu } from "./post-options-menu"
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import type { PostCardDados } from "./post-card"
 
-export function PhotoPostCard({ post }: { post: PostCardDados }) {
+export function PhotoPostCard({ post, isOwner = false }: { post: PostCardDados; isOwner?: boolean }) {
   const [comentariosAbertos, setComentariosAbertos] = useState(false)
   const [imagemAberta, setImagemAberta] = useState(false)
   const objectFit = post.media_fit === "contain" ? "object-contain" : "object-cover"
@@ -26,6 +27,15 @@ export function PhotoPostCard({ post }: { post: PostCardDados }) {
             showBackground ? "bg-muted" : ""
           }`}
         >
+          {isOwner && (
+            <div className="absolute right-2 top-2 z-20">
+              <PostOptionsMenu
+                postId={post.id}
+                contentText={post.content_text}
+              />
+            </div>
+          )}
+
           <DialogTrigger
             render={
               <button

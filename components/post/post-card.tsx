@@ -3,6 +3,7 @@ import { formatarDataRelativa } from "@/lib/data"
 import { LikeButton } from "./like-button"
 import { CommentSection } from "@/components/comment/comment-section"
 import { PhotoPostCard } from "./photo-post-card"
+import { PostOptionsMenu } from "./post-options-menu"
 
 export type PostCardDados = {
   id: string
@@ -24,45 +25,53 @@ export type PostCardDados = {
   likedByCurrentUser: boolean
 }
 
-export function PostCard({ post }: { post: PostCardDados }) {
+export function PostCard({ post, isOwner = false }: { post: PostCardDados; isOwner?: boolean }) {
   if (post.media_type === "image" && post.media_url) {
-    return <PhotoPostCard post={post} />
+    return <PhotoPostCard post={post} isOwner={isOwner} />
   }
 
   return (
     <article className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground">
-      <header className="flex items-center gap-3">
-        <Link
-          href={`/perfil/${post.author.username}`}
-          className="flex shrink-0 items-center"
-          aria-label={`Ver perfil de ${post.author.name}`}
-        >
-          {post.author.avatar_url ? (
-            <img
-              src={post.author.avatar_url}
-              alt=""
-              className="size-10 rounded-full object-cover"
-            />
-          ) : (
-            <div
-              className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground"
-              aria-hidden="true"
-            >
-              {post.author.name.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </Link>
-        <div className="flex flex-col">
+      <header className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
           <Link
             href={`/perfil/${post.author.username}`}
-            className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+            className="flex shrink-0 items-center"
+            aria-label={`Ver perfil de ${post.author.name}`}
           >
-            {post.author.name}
+            {post.author.avatar_url ? (
+              <img
+                src={post.author.avatar_url}
+                alt=""
+                className="size-10 rounded-full object-cover"
+              />
+            ) : (
+              <div
+                className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground"
+                aria-hidden="true"
+              >
+                {post.author.name.charAt(0).toUpperCase()}
+              </div>
+            )}
           </Link>
-          <span className="text-xs text-muted-foreground">
-            @{post.author.username} · {formatarDataRelativa(post.created_at)}
-          </span>
+          <div className="flex flex-col">
+            <Link
+              href={`/perfil/${post.author.username}`}
+              className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              {post.author.name}
+            </Link>
+            <span className="text-xs text-muted-foreground">
+              @{post.author.username} · {formatarDataRelativa(post.created_at)}
+            </span>
+          </div>
         </div>
+        {isOwner && (
+          <PostOptionsMenu
+            postId={post.id}
+            contentText={post.content_text}
+          />
+        )}
       </header>
 
       {post.content_text && (

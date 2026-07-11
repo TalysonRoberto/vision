@@ -162,13 +162,13 @@ export default async function PerfilPage({
             }
           />
         ) : (
-          <ul className="flex flex-col gap-4">
-            {postsMapeados.map((post) => (
-              <li key={post.id}>
-                <PostCard post={post} />
-              </li>
-            ))}
-          </ul>
+            <ul className="flex flex-col gap-4">
+              {postsMapeados.map((post) => (
+                <li key={post.id}>
+                  <PostCard post={post} isOwner={isOwner} />
+                </li>
+              ))}
+            </ul>
         )}
       </section>
     </main>

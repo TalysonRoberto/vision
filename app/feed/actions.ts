@@ -57,3 +57,83 @@ export async function criarPost(input: CriarPostInput): Promise<CriarPostResulta
     return { ok: false, erro: "Erro ao publicar. Tente novamente." }
   }
 }
+
+export type EditarPostResultado =
+  | { ok: true }
+  | { ok: false; erro: string }
+
+export async function editarPost(
+  postId: string,
+  contentText: string
+): Promise<EditarPostResultado> {
+  const sessao = await auth()
+  if (!sessao?.user?.id) {
+    return { ok: false, erro: "Voce precisa estar logado." }
+  }
+
+  const texto = contentText.trim()
+  if (!texto) {
+    return { ok: false, erro: "O texto da publicacao nao pode ser vazio." }
+  }
+  if (texto.length > LIMITE_TEXTO) {
+    return { ok: false, erro: `Texto muito longo (max ${LIMITE_TEXTO} caracteres).` }
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { user_id: true, author: { select: { username: true } } },
+  })
+
+  if (!post) {
+    return { ok: false, erro: "Publicacao nao encontrada." }
+  }
+  if (post.user_id !== sessao.user.id) {
+    return { ok: false, erro: "Voce nao tem permissao para editar esta publicacao." }
+  }
+
+  try {
+    await prisma.post.update({
+      where: { id: postId },
+      data: { content_text: texto },
+    })
+
+    revalidatePath("/feed")
+    revalidatePath(`/perfil/${post.author.username}`)
+    return { ok: true }
+  } catch {
+    return { ok: false, erro: "Erro ao editar. Tente novamente." }
+  }
+}
+
+export type DeletarPostResultado =
+  | { ok: true }
+  | { ok: false; erro: string }
+
+export async function deletarPost(postId: string): Promise<DeletarPostResultado> {
+  const sessao = await auth()
+  if (!sessao?.user?.id) {
+    return { ok: false, erro: "Voce precisa estar logado." }
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { user_id: true, author: { select: { username: true } } },
+  })
+
+  if (!post) {
+    return { ok: false, erro: "Publicacao nao encontrada." }
+  }
+  if (post.user_id !== sessao.user.id) {
+    return { ok: false, erro: "Voce nao tem permissao para deletar esta publicacao." }
+  }
+
+  try {
+    await prisma.post.delete({ where: { id: postId } })
+
+    revalidatePath("/feed")
+    revalidatePath(`/perfil/${post.author.username}`)
+    return { ok: true }
+  } catch {
+    return { ok: false, erro: "Erro ao deletar. Tente novamente." }
+  }
+}

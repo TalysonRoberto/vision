@@ -83,13 +83,13 @@ export default async function FeedPage({
             descricao="Seja o primeiro a publicar algo na rede!"
           />
         ) : (
-          <ul className="flex flex-col gap-4">
-            {posts.map((post) => (
-              <li key={post.id}>
-                <PostCard post={post} />
-              </li>
-            ))}
-          </ul>
+            <ul className="flex flex-col gap-4">
+              {posts.map((post) => (
+                <li key={post.id}>
+                  <PostCard post={post} isOwner={post.author.id === sessao?.user?.id} />
+                </li>
+              ))}
+            </ul>
         )}
       </section>
 
