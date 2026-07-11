@@ -5,8 +5,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { criarPost } from "@/app/feed/actions"
+import { createBrowserClient } from "@/lib/supabase-browser"
+import { mimeParaMediaTipo, validarMime, validarTamanho } from "@/lib/upload"
 
 type EstadoUpload = "idle" | "enviando" | "concluido"
+
+const LIMITE_UPLOAD_MB = 50
 
 export function NewPost() {
   const [texto, setTexto] = useState("")
@@ -23,8 +27,13 @@ export function NewPost() {
     const selecionado = e.target.files?.[0]
     if (!selecionado) return
 
-    if (!selecionado.type.startsWith("image/") && !selecionado.type.startsWith("video/")) {
-      toast.error("Apenas imagem ou video sao permitidos.")
+    if (!validarMime(selecionado.type)) {
+      toast.error("Apenas imagem (jpeg, png, webp) ou video (mp4, webm) sao permitidos.")
+      return
+    }
+
+    if (!validarTamanho(selecionado.size, LIMITE_UPLOAD_MB * 1024 * 1024)) {
+      toast.error(`Arquivo muito grande (max ${LIMITE_UPLOAD_MB}MB).`)
       return
     }
 
@@ -33,18 +42,26 @@ export function NewPost() {
     setEstadoUpload("enviando")
 
     try {
-      const formData = new FormData()
-      formData.append("arquivo", selecionado)
-      formData.append("pasta", "rede-social/posts")
+      const supabase = createBrowserClient()
+      const mediaType = mimeParaMediaTipo(selecionado.type)
+      const ext = selecionado.type.split("/")[1]
+      const fileName = `${crypto.randomUUID()}.${ext}`
+      const filePath = `rede-social/posts/${fileName}`
 
-      const resposta = await fetch("/api/upload", { method: "POST", body: formData })
-      if (!resposta.ok) {
-        const { error } = await resposta.json()
-        throw new Error(error ?? "Erro no upload")
+      const { error } = await supabase.storage
+        .from("posts")
+        .upload(filePath, selecionado, {
+          contentType: selecionado.type,
+          upsert: false,
+        })
+
+      if (error) {
+        throw new Error(`Falha no upload: ${error.message}`)
       }
-      const dados = await resposta.json()
-      setMediaUrl(dados.mediaUrl)
-      setMediaType(dados.mediaType)
+
+      const { data } = supabase.storage.from("posts").getPublicUrl(filePath)
+      setMediaUrl(data.publicUrl)
+      setMediaType(mediaType)
       setEstadoUpload("concluido")
       toast.success("Midia anexada")
     } catch (erro) {
