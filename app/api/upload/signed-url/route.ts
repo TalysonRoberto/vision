@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { getSupabaseServiceClient, mimeParaMediaTipo, validarMime, validarTamanho } from "@/lib/upload"
+import {
+  getSupabaseServiceClient,
+  mimeParaMediaTipo,
+  validarMime,
+  validarMimeMusica,
+  validarTamanho,
+} from "@/lib/upload"
 import { randomUUID } from "crypto"
 
 const LIMITE_UPLOAD_MB = 50
@@ -20,14 +26,21 @@ export async function POST(req: Request) {
 
   const { mime, pasta = "rede-social/posts" } = body as { mime?: string; pasta?: string }
 
-  if (!mime || !validarMime(mime)) {
+  if (!mime) {
+    return NextResponse.json({ error: "MIME nao informado" }, { status: 400 })
+  }
+
+  const isPostMedia = validarMime(mime)
+  const isMusic = validarMimeMusica(mime)
+
+  if (!isPostMedia && !isMusic) {
     return NextResponse.json(
-      { error: "Tipo de arquivo nao suportado. Use imagem (jpeg, png, webp) ou video (mp4, webm)." },
+      { error: "Tipo de arquivo nao suportado." },
       { status: 415 }
     )
   }
 
-  const mediaType = mimeParaMediaTipo(mime)
+  const mediaType = isPostMedia ? mimeParaMediaTipo(mime) : "audio"
   const ext = mime.split("/")[1]
   const fileName = `${randomUUID()}.${ext}`
   const filePath = `${pasta}/${fileName}`

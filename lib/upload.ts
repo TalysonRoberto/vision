@@ -4,7 +4,10 @@ import { randomUUID } from "crypto"
 const MIME_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "video/mp4", "video/webm"] as const
 type MimeType = (typeof MIME_PERMITIDOS)[number]
 
-export type MediaTipo = "image" | "video"
+const MIME_MUSICA_PERMITIDOS = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/webm"] as const
+type MimeMusicaType = (typeof MIME_MUSICA_PERMITIDOS)[number]
+
+export type MediaTipo = "image" | "video" | "audio"
 
 let _supabaseService: SupabaseClient | null = null
 
@@ -28,9 +31,14 @@ export function validarMime(mime: string): mime is MimeType {
   return (MIME_PERMITIDOS as readonly string[]).includes(mime)
 }
 
+export function validarMimeMusica(mime: string): mime is MimeMusicaType {
+  return (MIME_MUSICA_PERMITIDOS as readonly string[]).includes(mime)
+}
+
 export function mimeParaMediaTipo(mime: string): MediaTipo {
   if (mime.startsWith("image/")) return "image"
   if (mime.startsWith("video/")) return "video"
+  if (mime.startsWith("audio/")) return "audio"
   throw new Error(`MIME nao suportado: ${mime}`)
 }
 

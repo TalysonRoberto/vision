@@ -8,6 +8,7 @@ const perfilSchema = z.object({
   bio: z.string().max(160, "Bio deve ter no maximo 160 caracteres").optional(),
   avatar_url: z.string().url("URL de avatar invalida").optional(),
   cover_url: z.string().url("URL de capa invalida").optional(),
+  music_url: z.string().url("URL de musica invalida").optional().nullable(),
 })
 
 export async function PATCH(req: Request) {
@@ -30,11 +31,12 @@ export async function PATCH(req: Request) {
   }
 
   // So atualiza o proprio usuario (autorizacao server-side)
-  const dadosAtualizados: Record<string, string> = {}
+  const dadosAtualizados: Record<string, string | null> = {}
   if (parsed.data.name !== undefined) dadosAtualizados.name = parsed.data.name
   if (parsed.data.bio !== undefined) dadosAtualizados.bio = parsed.data.bio
   if (parsed.data.avatar_url !== undefined) dadosAtualizados.avatar_url = parsed.data.avatar_url
   if (parsed.data.cover_url !== undefined) dadosAtualizados.cover_url = parsed.data.cover_url
+  if (parsed.data.music_url !== undefined) dadosAtualizados.music_url = parsed.data.music_url
 
   if (Object.keys(dadosAtualizados).length === 0) {
     return NextResponse.json({ error: "Nenhum campo para atualizar" }, { status: 400 })
@@ -52,6 +54,7 @@ export async function PATCH(req: Request) {
         bio: true,
         avatar_url: true,
         cover_url: true,
+        music_url: true,
       },
     })
 

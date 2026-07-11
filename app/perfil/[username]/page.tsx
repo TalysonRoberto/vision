@@ -41,6 +41,7 @@ export default async function PerfilPage({
         bio: true,
         avatar_url: true,
         cover_url: true,
+        music_url: true,
       },
     }),
   ])
@@ -133,6 +134,7 @@ export default async function PerfilPage({
           bio: usuario.bio,
           avatar_url: usuario.avatar_url,
           cover_url: usuario.cover_url,
+          music_url: usuario.music_url,
         }}
         isOwner={isOwner}
       />
