@@ -42,25 +42,33 @@ export function NewPost() {
     setEstadoUpload("enviando")
 
     try {
-      const supabase = createBrowserClient()
-      const mediaType = mimeParaMediaTipo(selecionado.type)
-      const ext = selecionado.type.split("/")[1]
-      const fileName = `${crypto.randomUUID()}.${ext}`
-      const filePath = `rede-social/posts/${fileName}`
+      // 1. Pede signed URL do servidor (autenticado via NextAuth)
+      const resposta = await fetch("/api/upload/signed-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mime: selecionado.type, pasta: "rede-social/posts" }),
+      })
 
+      if (!resposta.ok) {
+        const { error } = await resposta.json()
+        throw new Error(error ?? "Erro ao preparar upload")
+      }
+
+      const { token, path, publicUrl, mediaType } = await resposta.json()
+
+      // 2. Faz upload direto para Supabase usando signed URL (bypass Vercel payload limit)
+      const supabase = createBrowserClient()
       const { error } = await supabase.storage
         .from("posts")
-        .upload(filePath, selecionado, {
+        .uploadToSignedUrl(path, token, selecionado, {
           contentType: selecionado.type,
-          upsert: false,
         })
 
       if (error) {
         throw new Error(`Falha no upload: ${error.message}`)
       }
 
-      const { data } = supabase.storage.from("posts").getPublicUrl(filePath)
-      setMediaUrl(data.publicUrl)
+      setMediaUrl(publicUrl)
       setMediaType(mediaType)
       setEstadoUpload("concluido")
       toast.success("Midia anexada")

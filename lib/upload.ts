@@ -6,13 +6,13 @@ type MimeType = (typeof MIME_PERMITIDOS)[number]
 
 export type MediaTipo = "image" | "video"
 
-let _supabase: SupabaseClient | null = null
+let _supabaseService: SupabaseClient | null = null
 
-function getSupabase(): SupabaseClient {
-  if (_supabase) return _supabase
+export function getSupabaseServiceClient(): SupabaseClient {
+  if (_supabaseService) return _supabaseService
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!url || !key) {
     throw new Error(
@@ -20,8 +20,8 @@ function getSupabase(): SupabaseClient {
     )
   }
 
-  _supabase = createClient(url, key)
-  return _supabase
+  _supabaseService = createClient(url, key)
+  return _supabaseService
 }
 
 export function validarMime(mime: string): mime is MimeType {
@@ -44,7 +44,7 @@ export async function uploadArquivo(
   mime: string,
   pasta: string
 ): Promise<UploadResultado> {
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceClient()
   const mediaType = mimeParaMediaTipo(mime)
   const ext = mime.split("/")[1]
   const fileName = `${randomUUID()}.${ext}`
