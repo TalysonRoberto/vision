@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import {
   getSupabaseServiceClient,
+  mimeParaExtensao,
   mimeParaMediaTipo,
   validarMime,
   validarMimeMusica,
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
   }
 
   const mediaType = isPostMedia ? mimeParaMediaTipo(mime) : "audio"
-  const ext = mime.split("/")[1]
+  const ext = mimeParaExtensao(mime)
   const fileName = `${randomUUID()}.${ext}`
   const filePath = `${pasta}/${fileName}`
 

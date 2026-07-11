@@ -98,14 +98,20 @@ export function EditProfileDialog({ perfil }: { perfil: PerfilAtual }) {
 
     const { token, path, publicUrl } = await resposta.json()
 
+    // uploadToSignedUrl ignora contentType quando o body e Blob/File,
+    // entao criamos um novo File com o MIME normalizado.
+    const arquivoNormalizado = new File([arquivo], arquivo.name, {
+      type: mimeParaSupabase(arquivo.type),
+    })
+
     const supabase = createBrowserClient()
-    const { error } = await supabase.storage
+    const { error, data: uploadData } = await supabase.storage
       .from("posts")
-      .uploadToSignedUrl(path, token, arquivo, {
-        contentType: mimeParaSupabase(arquivo.type),
-      })
+      .uploadToSignedUrl(path, token, arquivoNormalizado)
 
     if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[upload musica] erro:", error, { path, uploadData })
       throw new Error(`Falha no upload: ${error.message}`)
     }
 

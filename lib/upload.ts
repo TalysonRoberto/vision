@@ -54,7 +54,7 @@ export async function uploadArquivo(
 ): Promise<UploadResultado> {
   const supabase = getSupabaseServiceClient()
   const mediaType = mimeParaMediaTipo(mime)
-  const ext = mime.split("/")[1]
+  const ext = mimeParaExtensao(mime)
   const fileName = `${randomUUID()}.${ext}`
   const filePath = `${pasta}/${fileName}`
 
@@ -79,8 +79,39 @@ export function validarTamanho(tamanhoBytes: number, limiteBytes = 10 * 1024 * 1
 }
 
 // Supabase Storage rejeita alguns MIME padroes de browser (ex: audio/mpeg).
-// Normaliza para variantes conhecidas que o Storage aceita.
+// Usamos contentType generico para arquivos de audio evitar rejeicao;
+// o browser ainda reproduz corretamente pela extensao e sniffing.
 export function mimeParaSupabase(mime: string): string {
-  if (mime === "audio/mpeg") return "audio/mp3"
+  if (mime.startsWith("audio/")) return "application/octet-stream"
   return mime
+}
+
+// Mapeia MIME para extensao de arquivo conhecida.
+// Importante: browsers reportam MP3 como audio/mpeg, mas a extensao correta e .mp3.
+export function mimeParaExtensao(mime: string): string {
+  switch (mime) {
+    case "audio/mpeg":
+    case "audio/mp3":
+      return "mp3"
+    case "audio/wav":
+      return "wav"
+    case "audio/ogg":
+      return "ogg"
+    case "audio/webm":
+      return "webm"
+    case "video/mp4":
+      return "mp4"
+    case "video/webm":
+      return "webm"
+    case "image/jpeg":
+      return "jpg"
+    case "image/png":
+      return "png"
+    case "image/webp":
+      return "webp"
+    case "image/gif":
+      return "gif"
+    default:
+      return mime.split("/")[1] ?? "bin"
+  }
 }

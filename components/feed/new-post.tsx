@@ -57,14 +57,20 @@ export function NewPost() {
       const { token, path, publicUrl, mediaType } = await resposta.json()
 
       // 2. Faz upload direto para Supabase usando signed URL (bypass Vercel payload limit)
+    // uploadToSignedUrl ignora contentType quando o body e Blob/File,
+    // entao criamos um novo File com o MIME normalizado.
+    const arquivoNormalizado = new File([selecionado], selecionado.name, {
+      type: mimeParaSupabase(selecionado.type),
+    })
+
     const supabase = createBrowserClient()
-    const { error } = await supabase.storage
+    const { error, data: uploadData } = await supabase.storage
       .from("posts")
-      .uploadToSignedUrl(path, token, selecionado, {
-        contentType: mimeParaSupabase(selecionado.type),
-      })
+      .uploadToSignedUrl(path, token, arquivoNormalizado)
 
       if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[upload midia] erro:", error, { path, uploadData })
         throw new Error(`Falha no upload: ${error.message}`)
       }
 
